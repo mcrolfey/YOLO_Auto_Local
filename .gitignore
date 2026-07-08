@@ -1,0 +1,8 @@
+outputs/
+data/*.yaml
+data/*.txt
+runs/
+*.pt
+__pycache__/
+*.pyc
+.venv/
