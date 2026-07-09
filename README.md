@@ -26,12 +26,25 @@ checkpoint, so the loop keeps refining a single model over time.
    python prepare_dataset.py
    ```
 
-   This reads images/labels from the paths below and writes
-   `data/dataset.yaml`, `data/train.txt`, `data/val.txt` (file-list based,
-   no images are copied):
+   With no arguments this reads images/labels from the default paths below
+   and writes `data/dataset.yaml`, `data/train.txt`, `data/val.txt`
+   (file-list based, no images are copied):
 
    - Images: `C:\Users\User\Desktop\uncropped_all\combined05-07-26\images`
    - Labels: `C:\Users\User\Desktop\uncropped_all\combined05-07-26\labels`
+
+   To use a different folder, or merge in extra images collected later,
+   pass one or more `--images_dir`/`--labels_dir` pairs (same order, same
+   count — all folders must share the same `classes.txt`):
+
+   ```
+   python prepare_dataset.py --images_dir "D:\new_batch\images" --labels_dir "D:\new_batch\labels"
+
+   # merge the default folder with a new one:
+   python prepare_dataset.py \
+     --images_dir "C:\Users\User\Desktop\uncropped_all\combined05-07-26\images" "D:\new_batch\images" \
+     --labels_dir "C:\Users\User\Desktop\uncropped_all\combined05-07-26\labels" "D:\new_batch\labels"
+   ```
 
 ## Running the loop
 
@@ -44,6 +57,10 @@ Useful flags:
 - `--dry_run` — exercise the LM Studio suggestion loop without training.
 - `--model yolov8s.pt` — starting checkpoint for cycle 1.
 - `--lm_studio_model` — model identifier as shown in LM Studio.
+- `--keep_lm_studio_loaded` — by default, the loop unloads the LM Studio model
+  before each training subprocess and reloads it before each suggestion call
+  (on an 8 GB GPU, training and LLM inference contending for VRAM at once is
+  both tight and much slower). Pass this to keep it resident throughout.
 
 Each cycle:
 1. Trains via `train_yolo.py` (subprocess) starting from the previous cycle's
