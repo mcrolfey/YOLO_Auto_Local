@@ -9,12 +9,34 @@ checkpoint, so the loop keeps refining a single model over time.
 
 ## Setup
 
-1. Use the existing `yolo` conda environment (already has `ultralytics` +
-   `torch` with CUDA):
+1. Create a dedicated conda environment (don't reuse an environment from
+   another project — Ultralytics/PyTorch pin specific versions that can
+   conflict with unrelated packages):
 
    ```
-   conda activate yolo
+   conda create -n yolo_auto_local python=3.12 -y
+   conda activate yolo_auto_local
+   ```
+
+   Install PyTorch with CUDA support first (match the CUDA build to your
+   GPU driver — this project was validated against `torch 2.5.1+cu121`; see
+   https://pytorch.org/get-started/locally/ for the right command if you're
+   on a different CUDA version):
+
+   ```
+   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+   ```
+
+   Then install the rest:
+
+   ```
    pip install -r requirements.txt
+   ```
+
+   Verify CUDA is visible before training:
+
+   ```
+   python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
    ```
 
 2. Start LM Studio, load a model (default expected: `google/gemma-4-26b-a4b`),
